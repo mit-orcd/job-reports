@@ -1,0 +1,543 @@
+Using log file: /orcd/data/orcd/022/util_viz/data/parsed_monthly/processed_files.log
+Processing: 202301-sacct.out
+Saving parsed file for 202212
+Successfully saved parsed file for 202212
+Saving parsed file for 202301
+Successfully saved parsed file for 202301
+Successfully saved parsed data into 2 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202301-sacct.out
+Processing: 202302-sacct.out
+Saving parsed file for 202301
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202301
+Saving parsed file for 202302
+Successfully saved parsed file for 202302
+Saving parsed file for 202303
+Successfully saved parsed file for 202303
+Successfully saved parsed data into 3 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202302-sacct.out
+Processing: 202303-sacct.out
+Saving parsed file for 202301
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202301
+Saving parsed file for 202302
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202302
+Saving parsed file for 202303
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202303
+Successfully saved parsed data into 3 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202303-sacct.out
+Processing: 202304-sacct.out
+Saving parsed file for 202301
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202301
+Saving parsed file for 202303
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202303
+Saving parsed file for 202304
+Successfully saved parsed file for 202304
+Saving parsed file for 202305
+Successfully saved parsed file for 202305
+Successfully saved parsed data into 4 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202304-sacct.out
+Processing: 202305-sacct.out
+Saving parsed file for 202304
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202304
+Saving parsed file for 202305
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202305
+Successfully saved parsed data into 2 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202305-sacct.out
+Processing: 202306-sacct.out
+Saving parsed file for 202304
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202304
+Saving parsed file for 202305
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202305
+Saving parsed file for 202306
+Successfully saved parsed file for 202306
+Saving parsed file for 202307
+Successfully saved parsed file for 202307
+Successfully saved parsed data into 4 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202306-sacct.out
+Processing: 202307-sacct.out
+Saving parsed file for 202306
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202306
+Saving parsed file for 202307
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202307
+Successfully saved parsed data into 2 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202307-sacct.out
+Processing: 202401-sacct.out
+Saving parsed file for 202311
+Successfully saved parsed file for 202311
+Saving parsed file for 202312
+Successfully saved parsed file for 202312
+Saving parsed file for 202401
+Successfully saved parsed file for 202401
+Successfully saved parsed data into 3 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202401-sacct.out
+Processing: 202402-sacct.out
+Saving parsed file for 202311
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202311
+Saving parsed file for 202312
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202312
+Saving parsed file for 202401
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202401
+Saving parsed file for 202402
+Successfully saved parsed file for 202402
+Saving parsed file for 202403
+Successfully saved parsed file for 202403
+Successfully saved parsed data into 5 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202402-sacct.out
+Processing: 202403-sacct.out
+Saving parsed file for 202311
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202311
+Saving parsed file for 202402
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202402
+Saving parsed file for 202403
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202403
+Successfully saved parsed data into 3 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202403-sacct.out
+Processing: 202404-sacct.out
+Saving parsed file for 202311
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202311
+Saving parsed file for 202403
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202403
+Saving parsed file for 202404
+Successfully saved parsed file for 202404
+Saving parsed file for 202405
+Successfully saved parsed file for 202405
+Successfully saved parsed data into 4 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202404-sacct.out
+Processing: 202405-sacct.out
+Saving parsed file for 202311
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202311
+Saving parsed file for 202404
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202404
+Saving parsed file for 202405
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202405
+Successfully saved parsed data into 3 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202405-sacct.out
+Processing: 202406-sacct.out
+Saving parsed file for 202311
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202311
+Saving parsed file for 202405
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202405
+Saving parsed file for 202406
+Successfully saved parsed file for 202406
+Saving parsed file for 202407
+Successfully saved parsed file for 202407
+Successfully saved parsed data into 4 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202406-sacct.out
+Processing: 202407-sacct.out
+Saving parsed file for 202311
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202311
+Saving parsed file for 202405
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202405
+Saving parsed file for 202406
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202406
+Saving parsed file for 202407
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202407
+Successfully saved parsed data into 4 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202407-sacct.out
+Processing: 202408-sacct.out
+Saving parsed file for 202311
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202311
+Saving parsed file for 202407
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202407
+Saving parsed file for 202408
+Successfully saved parsed file for 202408
+Successfully saved parsed data into 3 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202408-sacct.out
+Processing: 202409-sacct.out
+Saving parsed file for 202311
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202311
+Saving parsed file for 202408
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202408
+Saving parsed file for 202409
+Successfully saved parsed file for 202409
+Saving parsed file for 202410
+Successfully saved parsed file for 202410
+Successfully saved parsed data into 4 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202409-sacct.out
+Processing: 202410-sacct.out
+/orcd/home/002/kcnakamu/marimo/job-reports/utils/data_parser.py:63: DtypeWarning: Columns (0: jobid) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = pd.read_csv(data_file, sep="|", header=None, names=columns) # Load .out file
+Saving parsed file for 202311
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202311
+Saving parsed file for 202409
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202409
+Saving parsed file for 202410
+Found existing parsed file. Updating...
+Traceback (most recent call last):
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/utils/data_parser.py", line 122, in <module>
+    parse_and_save(args.input, args.output)
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/utils/data_parser.py", line 109, in parse_and_save
+    final_df.to_parquet(file_path)
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/.venv/lib/python3.12/site-packages/pandas/core/frame.py", line 3135, in to_parquet
+    return to_parquet(
+           ^^^^^^^^^^^
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/.venv/lib/python3.12/site-packages/pandas/io/parquet.py", line 490, in to_parquet
+    impl.write(
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/.venv/lib/python3.12/site-packages/pandas/io/parquet.py", line 191, in write
+    table = self.api.Table.from_pandas(df, **from_pandas_kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pyarrow/table.pxi", line 4796, in pyarrow.lib.Table.from_pandas
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/.venv/lib/python3.12/site-packages/pyarrow/pandas_compat.py", line 664, in dataframe_to_arrays
+    arrays[i] = maybe_fut.result()
+                ^^^^^^^^^^^^^^^^^^
+  File "/orcd/software/core/001/pkg/miniforge/25.11.0-0/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/orcd/software/core/001/pkg/miniforge/25.11.0-0/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/orcd/software/core/001/pkg/miniforge/25.11.0-0/lib/python3.12/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/.venv/lib/python3.12/site-packages/pyarrow/pandas_compat.py", line 639, in convert_column
+    raise e
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/.venv/lib/python3.12/site-packages/pyarrow/pandas_compat.py", line 633, in convert_column
+    result = pa.array(col, type=type_, from_pandas=True, safe=safe)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pyarrow/array.pxi", line 365, in pyarrow.lib.array
+  File "pyarrow/array.pxi", line 91, in pyarrow.lib._ndarray_to_array
+  File "pyarrow/error.pxi", line 92, in pyarrow.lib.check_status
+pyarrow.lib.ArrowTypeError: ("Expected bytes, got a 'int' object", 'Conversion failed for column jobid with type object')
+Error processing: 202410-sacct.out
+Processing: 202411-sacct.out
+Saving parsed file for 202311
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202311
+Saving parsed file for 202410
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202410
+Saving parsed file for 202411
+Successfully saved parsed file for 202411
+Saving parsed file for 202412
+Successfully saved parsed file for 202412
+Successfully saved parsed data into 4 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202411-sacct.out
+Processing: 202412-sacct.out
+Saving parsed file for 202311
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202311
+Saving parsed file for 202411
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202411
+Saving parsed file for 202412
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202412
+Successfully saved parsed data into 3 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202412-sacct.out
+Processing: 202501-sacct.out
+Traceback (most recent call last):
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/utils/data_parser.py", line 122, in <module>
+    parse_and_save(args.input, args.output)
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/utils/data_parser.py", line 91, in parse_and_save
+    df = parse_file(data_file)
+         ^^^^^^^^^^^^^^^^^^^^^
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/utils/data_parser.py", line 63, in parse_file
+    df = pd.read_csv(data_file, sep="|", header=None, names=columns) # Load .out file
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 873, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 306, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1947, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 215, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pandas/_libs/parsers.pyx", line 832, in pandas._libs.parsers.TextReader.read_low_memory
+  File "pandas/_libs/parsers.pyx", line 897, in pandas._libs.parsers.TextReader._read_rows
+  File "pandas/_libs/parsers.pyx", line 868, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "pandas/_libs/parsers.pyx", line 885, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "pandas/_libs/parsers.pyx", line 2084, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 26 fields in line 617965, saw 28
+
+Error processing: 202501-sacct.out
+Processing: 202502-sacct.out
+Saving parsed file for 202501
+Successfully saved parsed file for 202501
+Saving parsed file for 202502
+Successfully saved parsed file for 202502
+Saving parsed file for 202503
+Successfully saved parsed file for 202503
+Successfully saved parsed data into 3 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202502-sacct.out
+Processing: 202503-sacct.out
+Traceback (most recent call last):
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/utils/data_parser.py", line 122, in <module>
+    parse_and_save(args.input, args.output)
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/utils/data_parser.py", line 91, in parse_and_save
+    df = parse_file(data_file)
+         ^^^^^^^^^^^^^^^^^^^^^
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/utils/data_parser.py", line 63, in parse_file
+    df = pd.read_csv(data_file, sep="|", header=None, names=columns) # Load .out file
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 873, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 306, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1947, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 215, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pandas/_libs/parsers.pyx", line 832, in pandas._libs.parsers.TextReader.read_low_memory
+  File "pandas/_libs/parsers.pyx", line 897, in pandas._libs.parsers.TextReader._read_rows
+  File "pandas/_libs/parsers.pyx", line 868, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "pandas/_libs/parsers.pyx", line 885, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "pandas/_libs/parsers.pyx", line 2084, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 26 fields in line 635544, saw 27
+
+Error processing: 202503-sacct.out
+Processing: 202504-sacct.out
+Saving parsed file for 202501
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202501
+Saving parsed file for 202502
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202502
+Saving parsed file for 202503
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202503
+Saving parsed file for 202504
+Successfully saved parsed file for 202504
+Saving parsed file for 202505
+Successfully saved parsed file for 202505
+Successfully saved parsed data into 5 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202504-sacct.out
+Processing: 202505-sacct.out
+Saving parsed file for 202501
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202501
+Saving parsed file for 202502
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202502
+Saving parsed file for 202503
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202503
+Saving parsed file for 202504
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202504
+Saving parsed file for 202505
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202505
+Successfully saved parsed data into 5 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202505-sacct.out
+Processing: 202506-sacct.out
+Saving parsed file for 202501
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202501
+Saving parsed file for 202502
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202502
+Saving parsed file for 202503
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202503
+Saving parsed file for 202504
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202504
+Saving parsed file for 202505
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202505
+Saving parsed file for 202506
+Successfully saved parsed file for 202506
+Saving parsed file for 202507
+Successfully saved parsed file for 202507
+Successfully saved parsed data into 7 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202506-sacct.out
+Processing: 202507-sacct.out
+Saving parsed file for 202501
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202501
+Saving parsed file for 202502
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202502
+Saving parsed file for 202503
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202503
+Saving parsed file for 202504
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202504
+Saving parsed file for 202505
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202505
+Saving parsed file for 202506
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202506
+Saving parsed file for 202507
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202507
+Successfully saved parsed data into 7 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202507-sacct.out
+Processing: 202508-sacct.out
+Saving parsed file for 202501
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202501
+Saving parsed file for 202502
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202502
+Saving parsed file for 202503
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202503
+Saving parsed file for 202504
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202504
+Saving parsed file for 202505
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202505
+Saving parsed file for 202506
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202506
+Saving parsed file for 202507
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202507
+Saving parsed file for 202508
+Successfully saved parsed file for 202508
+Successfully saved parsed data into 8 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202508-sacct.out
+Processing: 202509-sacct.out
+Saving parsed file for 202508
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202508
+Saving parsed file for 202509
+Successfully saved parsed file for 202509
+Saving parsed file for 202510
+Successfully saved parsed file for 202510
+Successfully saved parsed data into 3 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202509-sacct.out
+Processing: 202510-sacct.out
+Saving parsed file for 202509
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202509
+Saving parsed file for 202510
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202510
+Successfully saved parsed data into 2 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202510-sacct.out
+Processing: 202511-sacct.out
+Saving parsed file for 202510
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202510
+Saving parsed file for 202511
+Successfully saved parsed file for 202511
+Saving parsed file for 202512
+Successfully saved parsed file for 202512
+Successfully saved parsed data into 3 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202511-sacct.out
+Processing: 202512-sacct.out
+Saving parsed file for 202511
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202511
+Saving parsed file for 202512
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202512
+Successfully saved parsed data into 2 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202512-sacct.out
+Processing: 202601-sacct.out
+Saving parsed file for 202511
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202511
+Saving parsed file for 202512
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202512
+Saving parsed file for 202601
+Successfully saved parsed file for 202601
+Successfully saved parsed data into 3 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202601-sacct.out
+Processing: 202602-sacct.out
+Traceback (most recent call last):
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/utils/data_parser.py", line 122, in <module>
+    parse_and_save(args.input, args.output)
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/utils/data_parser.py", line 91, in parse_and_save
+    df = parse_file(data_file)
+         ^^^^^^^^^^^^^^^^^^^^^
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/utils/data_parser.py", line 63, in parse_file
+    df = pd.read_csv(data_file, sep="|", header=None, names=columns) # Load .out file
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 873, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 306, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1947, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/orcd/home/002/kcnakamu/marimo/job-reports/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 215, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pandas/_libs/parsers.pyx", line 832, in pandas._libs.parsers.TextReader.read_low_memory
+  File "pandas/_libs/parsers.pyx", line 897, in pandas._libs.parsers.TextReader._read_rows
+  File "pandas/_libs/parsers.pyx", line 868, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "pandas/_libs/parsers.pyx", line 885, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "pandas/_libs/parsers.pyx", line 2084, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 26 fields in line 49411, saw 27
+
+Error processing: 202602-sacct.out
+Processing: 202603-sacct.out
+Saving parsed file for 202512
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202512
+Saving parsed file for 202601
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202601
+Saving parsed file for 202602
+Successfully saved parsed file for 202602
+Saving parsed file for 202603
+Successfully saved parsed file for 202603
+Successfully saved parsed data into 4 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202603-sacct.out
+Processing: 202604-sacct.out
+Saving parsed file for 202512
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202512
+Saving parsed file for 202601
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202601
+Saving parsed file for 202602
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202602
+Saving parsed file for 202603
+Found existing parsed file. Updating...
+Successfully saved parsed file for 202603
+Saving parsed file for 202604
+Successfully saved parsed file for 202604
+Successfully saved parsed data into 5 different data files in /orcd/data/orcd/022/util_viz/data/parsed_monthly!
+Logged: 202604-sacct.out

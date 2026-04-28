@@ -33,7 +33,8 @@ def _(mo):
 def _(Path):
     ### CONFIG ###
 
-    DATA_DIR = Path("/orcd/data/orcd/022/util_viz/data/parsed_monthly") # folder containing parsed data
+    # DATA_DIR = Path("/orcd/data/orcd/022/util_viz/data/parsed_monthly") # folder containing parsed data
+    DATA_DIR = Path("/orcd/data/orcd/022/util_viz/data/pi_partitions/pi_mghassem/") # folder containing parsed data
     DATA_TYPE = "parquet" # currently only supports parquet
 
     # How the data files are split up. If "month", files are in this format: {year}{month}*.parquet (e.g., 202512-sacct.parquet)
@@ -166,75 +167,32 @@ def _(df):
 
 
 @app.cell
-def _(pd):
-    # Load partition cpu
-    partition_cpus = pd.read_csv("data/partition_cpus.csv")
-    return (partition_cpus,)
-
-
-@app.cell
 def _(df, mo):
-    # Get all the partitions
-    partition_names = df["partition"].unique()
-    partition_names = [name for name in partition_names if "," not in name] # remove multiple partitions
+    import plotly.graph_objects as go
 
-    partition_search = mo.ui.multiselect(
-        options=sorted(partition_names),
-        label=f"Partitions ({len(partition_names)} found)",
+    user_counts = (
+        df.groupby('user')
+          .size()
+          .reset_index(name='num_jobs')
+          .sort_values(by='num_jobs', ascending=False)
     )
 
+    # Top 5 users
+    top_users = user_counts.head(5)
+    top_user_fig = go.Figure(data=[go.Table(
+        header=dict(
+            values=["User", "Number of Jobs"],
+            align="left"
+        ),
+        cells=dict(
+            values=[top_users['user'], top_users['num_jobs']],
+            align="left"
+        )
+    )])
 
-    controls = mo.vstack([
-        mo.md("## Filters"),
-        partition_search,
-    ])
+    top_user_fig.update_layout(title="Top 5 Users by Number of Jobs Submitted")
 
-    mo.output.append(partition_search)
-    return (partition_search,)
-
-
-@app.cell
-def _(mo, partition_search):
-    selected_partitions = partition_search.value
-
-    mo.stop(
-        not selected_partitions,
-        mo.md("⚠️ No partitions selected.")
-    )
-    return
-
-
-@app.cell
-def _(df, end_date, mo, partition_cpus, pd, px, start_date):
-    hours_in_period = (pd.Timestamp(end_date.value) - pd.Timestamp(start_date.value)).total_seconds() / 3600
-    merged = df.merge(partition_cpus, on='partition', how='inner')
-    utilization = merged.groupby('partition').apply(
-        lambda g: g['cpu_hours'].sum() / (g['total_cpus'].iloc[0] * hours_in_period) * 100 
-    ).reset_index()
-    n_partitions = len(utilization)
-    utilization.columns = ['partition', 'cpu_utilization']
-
-    fig2 = px.bar(
-        utilization,
-        x="partition",
-        y="cpu_utilization",
-        title="CPU Utilization by Partition",
-        labels={"cpu_utilization": "CPU Utilization", "partition": "Partition"},
-    )
-
-    fig2.update_layout(
-        xaxis_tickangle=-45,
-        xaxis_title="Partition",
-        yaxis_title="Utilization (%)",
-        height=500,
-        width=max(800, n_partitions * 40),  # ~40px per bar
-    )
-
-    mo.Html(f"""
-    <div style="overflow-x: auto; width: 100%;">
-        {mo.ui.plotly(fig2).text}
-    </div>
-    """)
+    mo.ui.plotly(top_user_fig)
     return
 
 
@@ -258,11 +216,37 @@ def _(df, end_date, mo, px, start_date):
         x="start",
         y="ncpus",
         title=fig_title,
-        labels={"start": "Time", "cpu_hours": "CPU Hours"},
+        labels={"start": "Time", "ncpus": "CPU Used"},
     )
 
     fig_hourly.update_layout(template="plotly_white")
     mo.ui.plotly(fig_hourly)
+    return (freq,)
+
+
+@app.cell
+def _(df, freq, mo, px):
+    # Group by hour to see temporal trends
+
+    gpu_fig_title = "Total GPU Used (Daily)" if freq == "D" else "Total GPU Used (Hourly)"
+
+    hourly_gpu = (
+        df.set_index("start")
+        .resample(freq)["alloctres_gpu"]
+        .sum()
+        .reset_index()
+    )
+
+    fig_hourly_gpu = px.bar(
+        hourly_gpu,
+        x="start",
+        y="alloctres_gpu",
+        title=gpu_fig_title,
+        labels={"start": "Time", "alloctres_gpu": "GPU Used"},
+    )
+
+    fig_hourly_gpu.update_layout(template="plotly_white")
+    mo.ui.plotly(fig_hourly_gpu)
     return
 
 
@@ -364,6 +348,11 @@ def _(
 
         mo.output.append(gpu_pie)
         mo.output.append(gpu_across_time)
+    return
+
+
+@app.cell
+def _():
     return
 
 
