@@ -17,8 +17,9 @@ def _():
     import re
     import hashlib
     import colorsys
+    from dateutil.relativedelta import relativedelta
 
-    return Path, datetime, mo, os, pd, px
+    return Path, datetime, mo, os, pd, px, relativedelta
 
 
 @app.cell
@@ -39,14 +40,6 @@ def _(Path):
     # How the data files are split up. If "month", files are in this format: {year}{month}*.parquet (e.g., 202512-sacct.parquet)
     DATE_STRUCTURE = "month"
 
-    # GPU Visualization Color Palette
-    gpu_colors = {
-        "h100": "#1f77b4",  # blue
-        "h200": "#ff7f0e",  # orange
-        "l40s": "#2ca02c",  # green
-        "a100": "#d62728",  # red
-        "b200": "#9467bd",  # purple
-    }
     return DATA_DIR, DATA_TYPE, DATE_STRUCTURE
 
 
@@ -67,7 +60,7 @@ def _(DATA_DIR, DATA_TYPE, DATE_STRUCTURE, os):
 
 
 @app.cell
-def _(DATA_DIR, DATA_TYPE, DATE_STRUCTURE, Path, mo, pd):
+def _(DATA_DIR, DATA_TYPE, DATE_STRUCTURE, Path, mo, pd, relativedelta):
     files = list(Path(DATA_DIR).glob(f"*.{DATA_TYPE}"))
     file_names = [f.name for f in files]
 
@@ -84,7 +77,7 @@ def _(DATA_DIR, DATA_TYPE, DATE_STRUCTURE, Path, mo, pd):
         mo.output.append(mo.md("## Select Analysis Timeframe"))
 
         start_date = mo.ui.date(
-            value=earliest_submit.date(),
+            value=latest_submit.date() - relativedelta(months=1) ,
             label="Start"
         )
         end_date = mo.ui.date(
@@ -201,13 +194,19 @@ def _(mo, partition_search):
         not selected_partitions,
         mo.md("⚠️ No partitions selected.")
     )
-    return
+    return (selected_partitions,)
 
 
 @app.cell
-def _(df, end_date, mo, partition_cpus, pd, px, start_date):
+def _(df, selected_partitions):
+    partition_df = df[df['partition'].isin(selected_partitions)]
+    return (partition_df,)
+
+
+@app.cell
+def _(end_date, mo, partition_cpus, partition_df, pd, px, start_date):
     hours_in_period = (pd.Timestamp(end_date.value) - pd.Timestamp(start_date.value)).total_seconds() / 3600
-    merged = df.merge(partition_cpus, on='partition', how='inner')
+    merged = partition_df.merge(partition_cpus, on='partition', how='inner')
     utilization = merged.groupby('partition').apply(
         lambda g: g['cpu_hours'].sum() / (g['total_cpus'].iloc[0] * hours_in_period) * 100 
     ).reset_index()
@@ -239,7 +238,7 @@ def _(df, end_date, mo, partition_cpus, pd, px, start_date):
 
 
 @app.cell
-def _(df, end_date, mo, px, start_date):
+def _(end_date, mo, partition_df, px, start_date):
     # Group by hour to see temporal trends
 
     duration = (end_date.value - start_date.value).days
@@ -247,7 +246,7 @@ def _(df, end_date, mo, px, start_date):
     fig_title = "Total CPU Used (Daily)" if freq == "D" else "Total CPU Used (Hourly)"
 
     hourly_cpu = (
-        df.set_index("start")
+        partition_df.set_index("start")
         .resample(freq)["ncpus"]
         .sum()
         .reset_index()
@@ -267,7 +266,7 @@ def _(df, end_date, mo, px, start_date):
 
 
 @app.cell
-def _(df, mo, px):
+def _(mo, partition_df, px):
     def get_consistent_color_map(df, column):
         unique_labels = sorted(df[column].unique())
         palette = px.colors.qualitative.Plotly 
@@ -324,7 +323,7 @@ def _(df, mo, px):
 
         return mo.ui.plotly(fig), order
 
-    gpu_df = df[df["alloctres_gpu"] > 0].copy()
+    gpu_df = partition_df[partition_df["alloctres_gpu"] > 0].copy()
     gpu_df = gpu_df[gpu_df.alloctres_gpu_type != "unspecified"]
     gpu_df["allocated_gpu"] = gpu_df['alloctres_gpu_type'].astype(str).str.strip().str.lower()
     gpu_df["allocated_gpu_MIG_bin"] = gpu_df['alloctres_gpu_type'].str.replace(
