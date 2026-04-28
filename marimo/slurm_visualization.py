@@ -1,7 +1,7 @@
 import marimo
 
 __generated_with = "0.20.2"
-app = marimo.App(width="medium")
+app = marimo.App(width="medium", auto_download=["html", "ipynb"])
 
 
 @app.cell
@@ -33,7 +33,7 @@ def _(mo):
 def _(Path):
     ### CONFIG ###
 
-    DATA_DIR = Path("../data/parsed_data") # folder containing parsed data
+    DATA_DIR = Path("/orcd/data/orcd/022/util_viz/data/parsed_monthly") # folder containing parsed data
     DATA_TYPE = "parquet" # currently only supports parquet
 
     # How the data files are split up. If "month", files are in this format: {year}{month}*.parquet (e.g., 202512-sacct.parquet)
@@ -246,7 +246,7 @@ def _(df, mo, px):
 
 
 @app.cell
-def _(colorsys, df, gpu_colors, hashlib, mo, px):
+def _(colorsys, df, fig, gpu_colors, hashlib, mo, px):
     def gpu_piechart(gpu_df, color_map, order):
         # Aggregate GPU count by type
         gpu_usage = (
@@ -263,13 +263,14 @@ def _(colorsys, df, gpu_colors, hashlib, mo, px):
             title="GPU Usage Distribution by Requested Type (Excluding Unspecified)",
             hole=0.4,
             color="allocated_gpu",
-            color_discrete_map=color_map,
-            category_orders={
-                "allocated_gpu": order
-            }
+            # color_discrete_map=color_map,
+            # category_orders={
+            #     "allocated_gpu": order
+            # }
         )
     
         fig_gpu.update_layout(margin=dict(t=50, b=20, l=20, r=20))
+        print(fig.layout.template.layout.colorway)
         return mo.ui.plotly(fig_gpu)
 
     def gpu_by_time(gpu_df, color_map):
