@@ -18,7 +18,7 @@ def _():
     import hashlib
     import colorsys
 
-    return Path, colorsys, datetime, hashlib, mo, os, pd, px
+    return Path, datetime, mo, os, pd, px
 
 
 @app.cell
@@ -47,7 +47,7 @@ def _(Path):
         "a100": "#d62728",  # red
         "b200": "#9467bd",  # purple
     }
-    return DATA_DIR, DATA_TYPE, DATE_STRUCTURE, gpu_colors
+    return DATA_DIR, DATA_TYPE, DATE_STRUCTURE
 
 
 @app.cell
@@ -78,8 +78,8 @@ def _(DATA_DIR, DATA_TYPE, DATE_STRUCTURE, Path, mo, pd):
         latest_month = max(file_names)
 
         # Load earliest and latest date
-        earliest_submit = pd.read_parquet(DATA_DIR / earliest_month).submit.min()
-        latest_submit = pd.read_parquet(DATA_DIR / latest_month).submit.max()
+        earliest_submit = pd.read_parquet(DATA_DIR / earliest_month, columns=["submit"]).submit.min()
+        latest_submit = pd.read_parquet(DATA_DIR / latest_month, columns=["submit"]).submit.max()
 
         mo.output.append(mo.md("## Select Analysis Timeframe"))
 
@@ -101,7 +101,18 @@ def _(DATA_DIR, DATA_TYPE, DATE_STRUCTURE, Path, mo, pd):
 
         mo.output.append(date_filter)
 
-    return end_date, file_names, start_date
+        button = mo.ui.run_button(label="Generate Report")
+        mo.output.append(button)
+    return button, end_date, file_names, start_date
+
+
+@app.cell
+def _(button, mo):
+    mo.stop(
+        not button.value,
+    )
+    mo.md("Generating...")
+    return
 
 
 @app.cell
@@ -118,9 +129,14 @@ def _(
     # get all appropriate folders
 
     def load_single_file(file_dir: Path, min_date: datetime, max_date: datetime):
-        df = pd.read_parquet(file_dir)
-        mask = (df['submit'] >=  pd.Timestamp(min_date)) & (df['submit'] <= pd.Timestamp(max_date))
-        return df[mask]
+        return pd.read_parquet(
+            file_dir,
+            engine='pyarrow',
+            filters=[
+                ('submit', '>=', pd.Timestamp(min_date)),
+                ('submit', '<=', pd.Timestamp(max_date))
+            ]
+        )
 
     def load_all_files(data_folder: Path, data_filenames: list[str], min_date: datetime, max_date: datetime):
         min_formatted = min_date.strftime("%Y%m")
@@ -135,7 +151,7 @@ def _(
                     dfs.append(df)
         final_df = pd.concat(dfs, ignore_index=True)
         return final_df
-                
+
     df = load_all_files(DATA_DIR, file_names, start_date.value, end_date.value)
     # sanity check
     assert df.submit.min() >= pd.Timestamp(start_date.value)
@@ -152,7 +168,7 @@ def _(df):
 @app.cell
 def _(pd):
     # Load partition cpu
-    partition_cpus = pd.read_csv("../data/partition_cpus.csv")
+    partition_cpus = pd.read_csv("data/partition_cpus.csv")
     return (partition_cpus,)
 
 
@@ -223,11 +239,16 @@ def _(df, end_date, mo, partition_cpus, pd, px, start_date):
 
 
 @app.cell
-def _(df, mo, px):
+def _(df, end_date, mo, px, start_date):
     # Group by hour to see temporal trends
+
+    duration = (end_date.value - start_date.value).days
+    freq = "D" if duration > 14 else "h"
+    fig_title = "Total CPU Used (Daily)" if freq == "D" else "Total CPU Used (Hourly)"
+
     hourly_cpu = (
         df.set_index("start")
-        .resample("h")["ncpus"]
+        .resample(freq)["ncpus"]
         .sum()
         .reset_index()
     )
@@ -236,7 +257,7 @@ def _(df, mo, px):
         hourly_cpu,
         x="start",
         y="ncpus",
-        title="Total CPU Used (Hourly)",
+        title=fig_title,
         labels={"start": "Time", "cpu_hours": "CPU Hours"},
     )
 
@@ -246,102 +267,103 @@ def _(df, mo, px):
 
 
 @app.cell
-def _(colorsys, df, fig, gpu_colors, hashlib, mo, px):
-    def gpu_piechart(gpu_df, color_map, order):
+def _(df, mo, px):
+    def get_consistent_color_map(df, column):
+        unique_labels = sorted(df[column].unique())
+        palette = px.colors.qualitative.Plotly 
+        return {label: palette[i % len(palette)] for i, label in enumerate(unique_labels)}
+
+    def gpu_piechart(gpu_df, color_map, order, target_column):
         # Aggregate GPU count by type
         gpu_usage = (
-            gpu_df.groupby("allocated_gpu")["alloctres_gpu"]
+            gpu_df.groupby(target_column)["alloctres_gpu"]
             .sum()
             .reset_index()
             .sort_values("alloctres_gpu", ascending=False)
         )
-    
+
         fig_gpu = px.pie(
             gpu_usage,
             values="alloctres_gpu",
-            names="allocated_gpu",
+            names=target_column,
             title="GPU Usage Distribution by Requested Type (Excluding Unspecified)",
             hole=0.4,
-            color="allocated_gpu",
-            # color_discrete_map=color_map,
-            # category_orders={
-            #     "allocated_gpu": order
-            # }
+            color=target_column,
+            color_discrete_map=color_map,
         )
-    
+
         fig_gpu.update_layout(margin=dict(t=50, b=20, l=20, r=20))
-        print(fig.layout.template.layout.colorway)
         return mo.ui.plotly(fig_gpu)
 
-    def gpu_by_time(gpu_df, color_map):
+    def gpu_by_time(gpu_df, color_map, target_column):
         gpu_df["day"] = gpu_df["submit"].dt.floor("D")
-    
+
         gpu_time = (
-            gpu_df.groupby(["day", "allocated_gpu"])["alloctres_gpu"]
+            gpu_df.groupby(["day", target_column])["alloctres_gpu"]
             .sum()
             .reset_index()
         )
 
-        order = gpu_time.sort_values("allocated_gpu", ascending=False)["allocated_gpu"].tolist()
-    
+        order = gpu_time.sort_values(target_column, ascending=False)[target_column].tolist()
+
         fig = px.area(
             gpu_time,
             x="day",
             y="alloctres_gpu",
             title="Daily GPU Utilization by Type",
-            color="allocated_gpu",
+            color=target_column,
             color_discrete_map=color_map,
-            category_orders={"allocated_gpu": order}
+            category_orders={target_column: order}
         )
-    
+
         fig.update_layout(
             xaxis_title="Day",
             yaxis_title="Total GPUs Requested",
             margin=dict(t=50, b=20, l=20, r=20)
         )
-    
+
         return mo.ui.plotly(fig), order
 
     gpu_df = df[df["alloctres_gpu"] > 0].copy()
     gpu_df = gpu_df[gpu_df.alloctres_gpu_type != "unspecified"]
-    if len(gpu_df) > 0:
-        gpu_df["allocated_gpu"] = gpu_df['alloctres_gpu_type'].str.split("_").str[0]
-        gpu_df["allocated_gpu"] = gpu_df["allocated_gpu"].astype(str).str.strip().str.lower()
-        unique_gpu = gpu_df.allocated_gpu.unique()
-
-        all_gpu_colors = gpu_colors.copy()
-        for gpu in unique_gpu:
-            if gpu not in all_gpu_colors:
-                # generate random color
-                h = int(hashlib.md5(gpu.encode()).hexdigest(), 16)
-                hue = (h % 360) / 360.0
-                sat = 0.6
-                val = 0.85
-        
-                r, g, b = colorsys.hsv_to_rgb(hue, sat, val)
-                color = f"#{int(r*255):02x}{int(g*255):02x}{int(b*255):02x}"
-                all_gpu_colors[gpu] = color
-
-        filtered_color_map = {
-            gpu: color
-            for gpu, color in all_gpu_colors.items()
-            if gpu in gpu_df["allocated_gpu"].unique()
-        }
-
-        gpu_across_time, order = gpu_by_time(gpu_df, filtered_color_map)
-        mo.output.append(gpu_piechart(gpu_df, filtered_color_map, order))
-        mo.output.append(gpu_across_time)
-
-
-    
-                    
-
-
-    return
+    gpu_df["allocated_gpu"] = gpu_df['alloctres_gpu_type'].astype(str).str.strip().str.lower()
+    gpu_df["allocated_gpu_MIG_bin"] = gpu_df['alloctres_gpu_type'].str.replace(
+        r"(\w+)_(\d+g\.\d+gb)", 
+        r"\1_MIG", 
+        regex=True
+    )
+    return get_consistent_color_map, gpu_by_time, gpu_df, gpu_piechart
 
 
 @app.cell
-def _():
+def _(mo):
+    checkbox = mo.ui.checkbox(label="Bucket Multi-Instance GPUs (MIG)")
+    return (checkbox,)
+
+
+@app.cell
+def _(
+    checkbox,
+    get_consistent_color_map,
+    gpu_by_time,
+    gpu_df,
+    gpu_piechart,
+    mo,
+):
+    mo.output.append(mo.hstack([checkbox, mo.md(f"Bucketting MIGs: {checkbox.value}")]))
+
+    if len(gpu_df) == 0:
+        mo.output.append(mo.md("No Specified GPUs Found"))
+
+    if len(gpu_df) > 0:
+        gpu_column = "allocated_gpu_MIG_bin" if checkbox.value else "allocated_gpu" 
+
+        color_map = get_consistent_color_map(gpu_df, gpu_column)
+        gpu_across_time, order = gpu_by_time(gpu_df, color_map, gpu_column)
+        gpu_pie = gpu_piechart(gpu_df, color_map, order, gpu_column)
+
+        mo.output.append(gpu_pie)
+        mo.output.append(gpu_across_time)
     return
 
 
