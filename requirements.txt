@@ -24,5 +24,7 @@ PyYAML==6.0.3
 six==1.17.0
 starlette==0.52.1
 tomlkit==0.14.0
+tqdm==4.67.3
+typing_extensions==4.15.0
 uvicorn==0.41.0
 websockets==16.0
