@@ -132,4 +132,4 @@ if __name__ == "__main__":
 
     # Example usage: python generate_parsed.py --input=/orcd/data/orcd/022/util_viz/data/202301-sacct.out --output=/orcd/data/orcd/022/util_viz/data/temp
 
-    
+
