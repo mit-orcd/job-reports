@@ -245,15 +245,21 @@ def _(
 
 @app.cell
 def _(df, end_date, metrics, mo, n_partitions, pd, px, start_date):
-    ### CPU Utilization by Partition
-
     def cpu_visualizations():
+        # CPU Utilization by Partition
         cpu_partition_util = px.bar(
             metrics,
             x="partition",
             y="cpu_utilization",
             title="CPU Utilization by Partition",
             labels={"cpu_utilization": "CPU Utilization", "partition": "Partition"},
+            color="cpu_utilization",
+            color_continuous_scale=[
+                [0, "#10b981"],      # Green for low utilization
+                [0.5, "#f59e0b"],    # Amber for medium
+                [0.75, "#ef4444"],   # Red for high
+                [1, "#991b1b"]       # Dark red for critical
+            ],
         )
 
         cpu_partition_util.update_layout(
@@ -261,7 +267,12 @@ def _(df, end_date, metrics, mo, n_partitions, pd, px, start_date):
             xaxis_title="Partition",
             yaxis_title="Utilization (%)",
             height=500,
-            width=max(800, n_partitions * 40),  # ~40px per bar
+            width=max(800, n_partitions * 40),
+            template="plotly_white",
+            showlegend=False,
+        )
+        cpu_partition_util.update_traces(
+            hovertemplate="<b>%{x}</b><br>Utilization: %{y:.1f}%<extra></extra>"
         )
 
         cpu_partition_plot = mo.Html(f"""
@@ -287,9 +298,23 @@ def _(df, end_date, metrics, mo, n_partitions, pd, px, start_date):
             y="ncpus",
             title=fig_title,
             labels={"start": "Time", "cpu_hours": "CPU Hours"},
+            color="ncpus",
+            color_continuous_scale="Blues",
         )
 
-        fig_hourly.update_layout(template="plotly_white")
+        # fig_hourly.update_layout(template="plotly_white")
+        fig_hourly.update_layout(
+            template="plotly_white",
+            showlegend=False,
+            xaxis_title="",
+            yaxis_title="CPUs Used",
+            hovermode='x unified',
+        )
+        fig_hourly.update_traces(
+            hovertemplate="<b>%{x|%b %d, %H:%M}</b><br>CPUs: %{y:,.0f}<extra></extra>" if freq == "h" 
+            else "<b>%{x|%b %d, %Y}</b><br>CPUs: %{y:,.0f}<extra></extra>"
+        )
+
         hourly_plot = mo.ui.plotly(fig_hourly)
 
         return mo.vstack([
@@ -297,134 +322,8 @@ def _(df, end_date, metrics, mo, n_partitions, pd, px, start_date):
             hourly_plot,
         ])
 
+
     return (cpu_visualizations,)
-
-
-@app.cell
-def _():
-
-    # ### GPU Utilization by Partition
-    # def gpu_utilization():
-    #     gpu_metrics = metrics[
-    #         (metrics["gpu_utilization"].notna()) & (metrics["gpu_utilization"] > 0)
-    #     ]
-
-    #     gpu_partition_util = px.bar(
-    #         gpu_metrics,
-    #         x="partition",
-    #         y="gpu_utilization",
-    #         title="GPU Utilization by Partition",
-    #         labels={"gpu_utilization": "GPU Utilization", "partition": "Partition"},
-    #     )
-
-    #     gpu_partition_util.update_layout(
-    #         xaxis_tickangle=-45,
-    #         xaxis_title="Partition",
-    #         yaxis_title="Utilization (%)",
-    #         height=500,
-    #         width=max(800, n_partitions * 40),  # ~40px per bar
-    #     )
-
-    #     return mo.Html(f"""
-    #     <div style="overflow-x: auto; width: 100%;">
-    #         {mo.ui.plotly(gpu_partition_util).text}
-    #     </div>
-    #     """)
-    return
-
-
-@app.cell
-def _():
-    # def get_consistent_color_map(df, column):
-    #     unique_labels = sorted(df[column].unique())
-    #     palette = px.colors.qualitative.Plotly 
-    #     return {label: palette[i % len(palette)] for i, label in enumerate(unique_labels)}
-
-    # def gpu_piechart(gpu_df, color_map, order, target_column):
-    #     # Aggregate GPU count by type
-    #     gpu_usage = (
-    #         gpu_df.groupby(target_column)["alloctres_gpu"]
-    #         .sum()
-    #         .reset_index()
-    #         .sort_values("alloctres_gpu", ascending=False)
-    #     )
-
-    #     fig_gpu = px.pie(
-    #         gpu_usage,
-    #         values="alloctres_gpu",
-    #         names=target_column,
-    #         title="GPU Usage Distribution by Requested Type (Excluding Unspecified)",
-    #         hole=0.4,
-    #         color=target_column,
-    #         color_discrete_map=color_map,
-    #     )
-
-    #     fig_gpu.update_layout(margin=dict(t=50, b=20, l=20, r=20))
-    #     return mo.ui.plotly(fig_gpu)
-
-    # def gpu_by_time(gpu_df, color_map, target_column):
-    #     gpu_df["day"] = gpu_df["submit"].dt.floor("D")
-
-    #     gpu_time = (
-    #         gpu_df.groupby(["day", target_column])["alloctres_gpu"]
-    #         .sum()
-    #         .reset_index()
-    #     )
-
-    #     order = gpu_time.sort_values(target_column, ascending=False)[target_column].tolist()
-
-    #     fig = px.area(
-    #         gpu_time,
-    #         x="day",
-    #         y="alloctres_gpu",
-    #         title="Daily GPU Utilization by Type",
-    #         color=target_column,
-    #         color_discrete_map=color_map,
-    #         category_orders={target_column: order}
-    #     )
-
-    #     fig.update_layout(
-    #         xaxis_title="Day",
-    #         yaxis_title="Total GPUs Requested",
-    #         margin=dict(t=50, b=20, l=20, r=20)
-    #     )
-
-    #     return mo.ui.plotly(fig), order
-
-    # gpu_df = df[df["alloctres_gpu"] > 0].copy()
-    # gpu_df = gpu_df[gpu_df.alloctres_gpu_type != "unspecified"]
-    # gpu_df["allocated_gpu"] = gpu_df['alloctres_gpu_type'].astype(str).str.strip().str.lower()
-    # gpu_df["allocated_gpu_MIG_bin"] = gpu_df['alloctres_gpu_type'].str.replace(
-    #     r"(\w+)_(\d+g\.\d+gb)", 
-    #     r"\1_MIG", 
-    #     regex=True
-    # )
-    return
-
-
-@app.cell
-def _():
-    # checkbox = mo.ui.checkbox(label="Bucket Multi-Instance GPUs (MIG)")
-    return
-
-
-@app.cell
-def _():
-    # mo.output.append(mo.hstack([checkbox, mo.md(f"Bucketting MIGs: {checkbox.value}")]))
-
-    # if len(gpu_df) == 0:
-    #     mo.output.append(mo.md("No Specified GPUs Found"))
-
-    # if len(gpu_df) > 0:
-    #     gpu_column = "allocated_gpu_MIG_bin" if checkbox.value else "allocated_gpu" 
-
-    #     color_map = get_consistent_color_map(gpu_df, gpu_column)
-    #     gpu_across_time, order = gpu_by_time(gpu_df, color_map, gpu_column)
-    #     gpu_pie = gpu_piechart(gpu_df, color_map, order, gpu_column)
-
-    #     mo.output.append(gpu_pie)
-    #     mo.output.append(gpu_across_time)
-    return
 
 
 @app.cell
@@ -467,6 +366,13 @@ def _(mo, px):
                 "gpu_utilization": "GPU Utilization",
                 "partition": "Partition"
             },
+            color="gpu_utilization",
+            color_continuous_scale=[
+                [0, "#10b981"],      # Green for low utilization
+                [0.5, "#f59e0b"],    # Amber for medium
+                [0.75, "#ef4444"],   # Red for high
+                [1, "#991b1b"]       # Dark red for critical
+            ],
         )
 
         fig.update_layout(
@@ -475,7 +381,14 @@ def _(mo, px):
             yaxis_title="Utilization (%)",
             height=500,
             width=max(800, n_partitions * 40),
+            template="plotly_white",
+            showlegend=False,
         )
+
+        fig.update_traces(
+            hovertemplate="<b>%{x}</b><br>Utilization: %{y:.1f}%<extra></extra>"
+        )
+
 
         return mo.Html(f"""
         <div style="overflow-x: auto; width: 100%;">
@@ -507,6 +420,8 @@ def _(mo, px):
             .reset_index()
         )
 
+        categories = sorted(gpu_time[column].dropna().unique(), reverse=True)
+
         fig = px.area(
             gpu_time,
             x="day",
@@ -514,12 +429,31 @@ def _(mo, px):
             title="Daily GPU Utilization by Type",
             color=column,
             color_discrete_map=color_map,
+            category_orders={column: categories},
         )
 
         fig.update_layout(
             xaxis_title="Day",
             yaxis_title="Total GPUs Requested",
             margin=dict(t=50, b=20, l=20, r=20),
+            template="plotly_white",
+            hovermode='x unified',
+            legend=dict(
+                title=dict(text=column.replace('_', ' ').title()),
+                orientation="v",
+                yanchor="top",
+                y=0.99,
+                xanchor="left",
+                x=1.02,
+                traceorder="reversed"
+            )
+        )
+
+        fig.update_traces(
+            hovertemplate="<b>%{fullData.name}</b><br>GPUs: %{y:,.0f}<extra></extra>",
+            mode='lines',
+            line=dict(width=0.5),
+            stackgroup='one'
         )
 
         return mo.ui.plotly(fig)
@@ -532,6 +466,11 @@ def _(mo, px):
             .sort_values("alloctres_gpu", ascending=False)
         )
 
+        categories = sorted(gpu_usage[column].dropna().unique())
+        total = gpu_usage["alloctres_gpu"].sum()
+        gpu_usage["percentage"] = (gpu_usage["alloctres_gpu"] / total * 100).round(1)
+
+
         fig = px.pie(
             gpu_usage,
             values="alloctres_gpu",
@@ -540,9 +479,27 @@ def _(mo, px):
             hole=0.4,
             color=column,
             color_discrete_map=color_map,
+            category_orders={column: categories},
         )
 
-        fig.update_layout(margin=dict(t=50, b=20, l=20, r=20))
+        fig.update_layout(
+            margin=dict(t=50, b=20, l=20, r=20),
+            template="plotly_white",
+            legend=dict(
+                orientation="v",
+                yanchor="middle",
+                y=0.5,
+                xanchor="left",
+                x=1.02
+            )
+        )
+
+        fig.update_traces(
+            textposition='auto',
+            textinfo='percent+label',
+            hovertemplate="<b>%{label}</b><br>GPUs: %{value:,.0f}<br>Share: %{percent}<extra></extra>",
+            marker=dict(line=dict(color='white', width=2))
+        )
 
         return mo.ui.plotly(fig)
 
