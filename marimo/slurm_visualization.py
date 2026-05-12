@@ -330,7 +330,6 @@ def _(df, end_date, metrics, mo, n_partitions, pd, px, start_date):
 def _(mo, px):
     def prepare_gpu_df(df):
         gpu_df = df[df["alloctres_gpu"] > 0].copy()
-        gpu_df = gpu_df[gpu_df["alloctres_gpu_type"] != "unspecified"]
 
         gpu_df["allocated_gpu"] = (
             gpu_df["alloctres_gpu_type"]
