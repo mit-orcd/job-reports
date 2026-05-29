@@ -13,8 +13,11 @@ def _():
     import plotly.express as px
     import plotly.graph_objects as go
     from datetime import datetime
+    from dateutil.relativedelta import relativedelta
+    import subprocess
+    import re
 
-    return Path, datetime, go, mo, os, pd, px
+    return Path, datetime, go, mo, os, pd, px, re, relativedelta, subprocess
 
 
 @app.cell
@@ -27,9 +30,10 @@ def _(mo):
 
 @app.cell
 def _(Path):
+    ### CONFIG ###
     DATA_DIR = Path("/orcd/data/orcd/022/util_viz/data/pi_partitions/pi_mghassem/")
-    DATA_TYPE = "parquet"
-    DATE_STRUCTURE = "month"
+    DATA_TYPE = "parquet" # currently only supports parquet
+    DATE_STRUCTURE = "month" # currently only supports month
     return DATA_DIR, DATA_TYPE, DATE_STRUCTURE
 
 
@@ -45,20 +49,23 @@ def _(DATA_DIR, DATA_TYPE, DATE_STRUCTURE, os):
 
 
 @app.cell
-def _(DATA_DIR, DATA_TYPE, Path, mo, pd):
+def _(DATA_DIR, DATA_TYPE, Path, mo, pd, relativedelta):
+    ### User Timeframe Config ###
+
+    # Get data files
     files = list(Path(DATA_DIR).glob(f"*.{DATA_TYPE}"))
     file_names = [f.name for f in files]
 
+    # Compute date range of available files 
     earliest_month = min(file_names)
     latest_month   = max(file_names)
-
     earliest_submit = pd.read_parquet(DATA_DIR / earliest_month, columns=["submit"]).submit.min()
     latest_submit   = pd.read_parquet(DATA_DIR / latest_month,   columns=["submit"]).submit.max()
 
-    mo.output.append(mo.md("## Select Analysis Timeframe"))
-
-    start_date = mo.ui.date(value=earliest_submit.date(), label="Start")
-    end_date   = mo.ui.date(value=latest_submit.date(),   label="End")
+    # User-selected start and end date
+    start_date = mo.ui.date(value=(latest_submit - relativedelta(months=1)).date(), label="Start")
+    end_date   = mo.ui.date(value=latest_submit.date(), label="End")
+    button = mo.ui.run_button(label="Generate Report")
 
     date_filter = mo.vstack([
         mo.md(f"**Date range in data (first submit, last submit):** `{earliest_submit.date()}` → `{latest_submit.date()}`"),
@@ -66,9 +73,10 @@ def _(DATA_DIR, DATA_TYPE, Path, mo, pd):
         end_date,
         mo.md("---"),
     ])
-    mo.output.append(date_filter)
 
-    button = mo.ui.run_button(label="Generate Report")
+
+    mo.output.append(mo.md("## Select Analysis Timeframe"))
+    mo.output.append(date_filter)
     mo.output.append(button)
     return button, end_date, file_names, start_date
 
@@ -86,10 +94,7 @@ def _(
     pd,
     start_date,
 ):
-    mo.stop(
-        not button.value,
-        mo.md("Click \"Generate Report\" Button to get Report.")
-    )
+    ### Load Dataset using user config ###
 
     def load_single_file(file_dir: Path, min_date: datetime, max_date: datetime):
         return pd.read_parquet(
@@ -109,39 +114,166 @@ def _(
                 dfs.append(load_single_file(data_folder / file, min_date, max_date))
         return pd.concat(dfs, ignore_index=True)
 
+    # Logic gate to prevent future code from running until button is pressed
+    mo.stop(
+        not button.value,
+        mo.md("Click \"Generate Report\" Button to get Report.")
+    )
+
+    # Load all files within the user-specified start and end date
     df = load_all_files(DATA_DIR, file_names, start_date.value, end_date.value)
+
+    # Confirm dataframe is within user-specified date range
     assert df.submit.min() >= pd.Timestamp(start_date.value)
     assert df.submit.max() <= pd.Timestamp(end_date.value)
     return (df,)
 
 
 @app.cell
-def _(df, pd):
+def _(df):
+    ### Modify dataframe for job-level visualizations ###
+
     df_m = df.copy()
     df_m["alloctres_gpu"] = df_m["alloctres_gpu"].fillna(0)
 
-    # Use existing cpu_hours if present; otherwise compute from ncpus * elapsed_seconds
-    if "cpu_hours" not in df_m.columns:
-        df_m["cpu_hours"] = df_m["ncpus"] * df_m["elapsed_seconds"] / 3600
-
+    # Compute CPU and GPU hours
+    df_m["cpu_hours"] = df_m["alloctres_cpu"] * df_m["elapsed_seconds"] / 3600
     df_m["gpu_hours"] = df_m["alloctres_gpu"] * df_m["elapsed_seconds"] / 3600
-
-    # timelimit_hours for efficiency (sacct stores minutes)
-    if "timelimit" in df_m.columns:
-        if pd.api.types.is_timedelta64_dtype(df_m["timelimit"]):
-            df_m["timelimit_hours"] = df_m["timelimit"].dt.total_seconds() / 3600
-        else:
-            df_m["timelimit_hours"] = pd.to_numeric(df_m["timelimit"], errors="coerce") / 60
-        df_m["cpu_hours_requested"] = df_m["ncpus"] * df_m["timelimit_hours"]
-        df_m["gpu_hours_requested"] = df_m["alloctres_gpu"] * df_m["timelimit_hours"]
-    else:
-        df_m["cpu_hours_requested"] = df_m["cpu_hours"]
-        df_m["gpu_hours_requested"] = df_m["gpu_hours"]
     return (df_m,)
 
 
 @app.cell
+def _(df, end_date, pd, re, start_date, subprocess):
+    ### Get per-node CPU and GPU resource capacity information for node-level visualizations ###
+
+    def load_node_specs():
+        """Get per-node resource information""" 
+        result = subprocess.run(
+            ["sinfo", "-o", "%n %c %G", "--noheader"],
+            capture_output=True, text=True
+        )
+        rows = []
+        for line in result.stdout.strip().splitlines():
+            parts = line.split()
+            if len(parts) < 3:
+                continue
+            node, cpus, gres = parts[0], parts[1], parts[2]
+            gpus = 0
+            if gres != "(null)":
+                try:
+                    gpus = int(gres.split(":")[-1])
+                except ValueError:
+                    pass
+            rows.append({
+                "node": node.lower(),
+                "cpu_capacity": int(cpus),
+                "gpu_capacity": gpus
+            })
+        specs = pd.DataFrame(rows).drop_duplicates("node")
+        return specs
+
+
+    def expand_nodelist(nodelist_str):
+        """
+        Expands SLURM nodelist strings into individual node names.
+        Handles:
+          - plain comma-separated:  'node01,node02'
+          - bracket ranges:         'node[01-03]'
+          - mixed:                  'node[01-02],gpu[03-04]'
+          - zero-padded:            'node[001-003]'
+        """
+        nodes = []
+        # Split on commas that are NOT inside brackets
+        parts = re.split(r",(?![^\[]*\])", nodelist_str)
+        for part in parts:
+            part = part.strip()
+            bracket_match = re.match(r"^(.*?)\[(.+)\]$", part)
+            if bracket_match:
+                prefix = bracket_match.group(1)
+                ranges = bracket_match.group(2).split(",")
+                for r in ranges:
+                    if "-" in r:
+                        start, end = r.split("-")
+                        width = len(start)  # preserve zero-padding
+                        for i in range(int(start), int(end) + 1):
+                            nodes.append(f"{prefix}{str(i).zfill(width)}")
+                    else:
+                        nodes.append(f"{prefix}{r}")
+            else:
+                nodes.append(part)
+        return nodes
+
+
+    def prepare_per_node_df(df):
+        # Only jobs that actually ran on nodes
+        _df = df[df["nodelist"].notna() & (df["nodelist"] != "") & (df["nodelist"] != "None assigned") & (df["nnodes"] > 0)].copy()
+
+        # Expand nodelist into individual nodes
+        _df["node"] = _df["nodelist"].apply(expand_nodelist)
+        _df = _df.explode("node")
+        _df["node"] = _df["node"].str.strip().str.lower()
+
+        # Distribute CPU and GPU evenly across nodes
+        _df["cpus_per_node"] = _df["alloctres_cpu"] / _df["nnodes"]
+        _df["gpus_per_node"] = _df["alloctres_gpu"] / _df["nnodes"]
+
+        return _df
+
+
+    def compute_node_utilization(df, start, end):
+        timeframe_seconds = (
+            pd.Timestamp(end) - pd.Timestamp(start)
+        ).total_seconds()
+
+        node_specs = load_node_specs()
+        per_node_df = prepare_per_node_df(df)
+
+        merged = per_node_df.merge(node_specs, on="node", how="left")
+
+        # Flag nodes missing from sinfo
+        missing = merged[merged["cpu_capacity"].isna()]["node"].unique()
+        if len(missing):
+            print(f"Warning: {len(missing)} nodes not found in sinfo: {missing[:5]}")
+
+        merged["gpu_seconds"] = merged["gpus_per_node"] * merged["elapsed_seconds"]
+        merged["cpu_seconds"] = merged["cpus_per_node"] * merged["elapsed_seconds"]
+
+        node_agg = (
+            merged.groupby("node")
+            .agg(
+                gpu_seconds  =("gpu_seconds",   "sum"),
+                cpu_seconds  =("cpu_seconds",   "sum"),
+                gpu_capacity =("gpu_capacity",  "first"),
+                cpu_capacity =("cpu_capacity",  "first"),
+                job_count    =("node",          "count"),
+            )
+            .reset_index()
+        )
+
+        node_agg["gpu_util_pct"] = (
+            node_agg["gpu_seconds"] /
+            (node_agg["gpu_capacity"] * timeframe_seconds)
+        ).where(node_agg["gpu_capacity"] > 0, 0)
+
+        node_agg["cpu_util_pct"] = (
+            node_agg["cpu_seconds"] /
+            (node_agg["cpu_capacity"] * timeframe_seconds)
+        ).where(node_agg["cpu_capacity"] > 0, 0)
+
+        node_agg["timeframe_seconds"] = timeframe_seconds
+        node_agg["gpu_avail"] = node_agg["gpu_capacity"] > 0
+    
+        return node_agg
+
+
+    node_util_df = compute_node_utilization(df, start_date.value, end_date.value)
+    return (node_util_df,)
+
+
+@app.cell
 def _(mo):
+    ### Create interactive buttons for visualization customization ###
+
     granularity_ctrl = mo.ui.radio(
         options={"Daily": "D", "Weekly": "W", "Monthly": "MS"},
         value="Daily",
@@ -160,6 +292,8 @@ def _(mo):
 
 @app.cell
 def _(df_m, mo):
+    ### Create usage summary cards ###
+
     def _card(label, value, accent):
         return f"""
         <div style="flex:1;min-width:160px;background:#fff;border-radius:10px;
@@ -181,6 +315,8 @@ def _(df_m, mo):
 
 @app.cell
 def _(df_m, granularity_ctrl, mo, px):
+    ### Job Count Visualization ###
+
     _freq  = granularity_ctrl.value
     _label = {"D": "Daily", "W": "Weekly", "MS": "Monthly"}[_freq]
     _ts    = df_m.set_index("submit").resample(_freq).size().reset_index(name="job_count")
@@ -191,6 +327,15 @@ def _(df_m, granularity_ctrl, mo, px):
         labels={"submit": "Date", "job_count": "Jobs"},
         color_discrete_sequence=["#3b82f6"],
     )
+
+    _fig.update_traces(
+        hovertemplate=(
+            "<b>%{x|%b %d, %Y}</b><br>"
+            "Jobs: <b>%{y:,}</b><br>"
+            "<extra></extra>"
+        )
+    )
+
     _fig.update_layout(template="plotly_white", bargap=0.25)
     job_count_chart = mo.ui.plotly(_fig)
     return (job_count_chart,)
@@ -198,16 +343,26 @@ def _(df_m, granularity_ctrl, mo, px):
 
 @app.cell
 def _(df_m, granularity_ctrl, mo, px):
+    ### CPU hours and GPU Hours Bar Chart ###
+
     _freq  = granularity_ctrl.value
     _label = {"D": "Daily", "W": "Weekly", "MS": "Monthly"}[_freq]
     _ts    = df_m.set_index("start").resample(_freq)
 
     def _bar(col, color, title):
+        _unit = "GPU-Hours" if "gpu" in col else "CPU-Hours"
         _f = px.bar(
             _ts[col].sum().reset_index(),
             x="start", y=col, title=title,
             labels={"start": "Date", col: title},
             color_discrete_sequence=[color],
+        )
+        _f.update_traces(
+            hovertemplate=(
+                "<b>%{x|%b %d, %Y}</b><br>"
+                f"{_unit}: <b>%{{y:,.1f}}</b><br>"
+                "<extra></extra>"
+            )
         )
         _f.update_layout(template="plotly_white", bargap=0.25)
         return mo.ui.plotly(_f)
@@ -219,6 +374,7 @@ def _(df_m, granularity_ctrl, mo, px):
 
 @app.cell
 def _(df_m, go, mo, top_metric_ctrl, top_n_ctrl):
+    ### Top User Chart ###
     _n      = top_n_ctrl.value
     _metric = top_metric_ctrl.value
     _col    = {"Job Count": None, "CPU-Hours": "cpu_hours", "GPU-Hours": "gpu_hours"}[_metric]
@@ -228,11 +384,20 @@ def _(df_m, go, mo, top_metric_ctrl, top_n_ctrl):
         else df_m.groupby("user")[_col].sum().reset_index(name="value")
     )
     _top = _stats.nlargest(_n, "value").sort_values("value")
+
+    _fmt = ".0f" if _metric == "Job Count" else ",.1f"
+    _hovertemplate = (
+        "<b>%{y}</b><br>"
+        f"{_metric}: <b>%{{x:{_fmt}}}</b><br>"
+        "<extra></extra>"
+    )
+
     _fig = go.Figure(go.Bar(
         x=_top["value"], y=_top["user"], orientation="h",
         marker_color="#6366f1",
         text=_top["value"].apply(lambda v: f"{v:,.0f}"),
         textposition="outside",
+        hovertemplate=_hovertemplate,
     ))
     _fig.update_layout(
         title=f"Top {_n} Users by {_metric}",
@@ -247,6 +412,7 @@ def _(df_m, go, mo, top_metric_ctrl, top_n_ctrl):
 
 @app.cell
 def _(df_m, go, mo):
+    ### Job Outcomes ###
     _CAT_MAP = {
         "COMPLETED": "Completed", "FAILED": "Failed",
         "NODE_FAIL": "Failed",    "OUT_OF_MEMORY": "Failed",
@@ -260,8 +426,10 @@ def _(df_m, go, mo):
 
     def _categorize(s):
         s = str(s).upper().strip()
-        if s in _CAT_MAP:          return _CAT_MAP[s]
-        if s.startswith("CANCEL"): return "Cancelled"
+        if s in _CAT_MAP:          
+            return _CAT_MAP[s]
+        if s.startswith("CANCEL"): 
+            return "Cancelled"
         return "Other"
 
     _h = df_m.copy()
@@ -313,10 +481,12 @@ def _(df_m, go, mo):
 
 
 @app.cell
-def _(cpu_time_chart, df_m, gpu_time_chart, job_count_chart, mo, px):
+def _(df_m, mo, px):
+    ### GPU Usage ###
+
     def prepare_gpu_df(df):
+        """Format GPU jobs"""
         gpu_df = df[df["alloctres_gpu"] > 0].copy()
-        gpu_df = gpu_df[gpu_df["alloctres_gpu_type"] != "unspecified"]
         gpu_df["allocated_gpu"] = (
             gpu_df["alloctres_gpu_type"].astype(str).str.strip().str.lower()
         )
@@ -331,6 +501,7 @@ def _(cpu_time_chart, df_m, gpu_time_chart, job_count_chart, mo, px):
         return {label: palette[i % len(palette)] for i, label in enumerate(unique_labels)}
 
     def gpu_time_series(gpu_df, column, color_map):
+        """Creates a time-series plot of GPU Utilization by type"""
         _df = gpu_df.copy()
         _df["day"] = _df["submit"].dt.floor("D")
         gpu_time = _df.groupby(["day", column])["alloctres_gpu"].sum().reset_index()
@@ -354,6 +525,7 @@ def _(cpu_time_chart, df_m, gpu_time_chart, job_count_chart, mo, px):
         return mo.ui.plotly(fig)
 
     def gpu_pie_chart(gpu_df, column, color_map):
+        """Creates a pie chart of the GPU Utilization by type"""
         gpu_usage = (
             gpu_df.groupby(column)["alloctres_gpu"].sum()
             .reset_index().sort_values("alloctres_gpu", ascending=False)
@@ -372,13 +544,71 @@ def _(cpu_time_chart, df_m, gpu_time_chart, job_count_chart, mo, px):
         return mo.ui.plotly(fig)
 
     gpu_df = prepare_gpu_df(df_m)
+    return get_color_map, gpu_df, gpu_pie_chart, gpu_time_series
 
+
+@app.cell
+def _(mo, node_util_df, px):
+    ### Per-node Utilization ###
+
+    def node_util_bar(node_util_df, metric="gpu_util_pct", title="Mean GPU Utilization % by Node"):
+        if "gpu" in metric.lower():
+            node_util_df = node_util_df[node_util_df["gpu_avail"]]
+        
+        node_avg = (
+            node_util_df.groupby("node")[metric]
+            .mean()
+            .reset_index()
+            .sort_values(metric, ascending=True)
+        )
+        node_avg[metric] *= 100
+
+        fig = px.bar(
+            node_avg, x=metric, y="node",
+            orientation="h",
+            title=title,
+            labels={metric: "Mean Utilization %", "node": "Node"},
+            color=metric,
+            color_continuous_scale="RdYlGn",
+            range_color=[0, 100],
+        )
+        fig.update_layout(
+            template="plotly_white",
+            margin=dict(t=50, b=20, l=20, r=20),
+            coloraxis_showscale=False,
+        )
+        fig.update_traces(
+            hovertemplate="<b>%{y}</b><br>Utilization: %{x:.1f}%<extra></extra>",
+        )
+        return mo.ui.plotly(fig)
+
+
+    gpu_node_bar    = node_util_bar(node_util_df, "gpu_util_pct", "Mean GPU Utilization % by Node")
+    cpu_node_bar    = node_util_bar(node_util_df, "cpu_util_pct", "Mean CPU Utilization % by Node")
+    return cpu_node_bar, gpu_node_bar
+
+
+@app.cell
+def _(
+    cpu_node_bar,
+    cpu_time_chart,
+    gpu_node_bar,
+    gpu_time_chart,
+    job_count_chart,
+    mo,
+):
     chart_tabs = mo.ui.tabs({
         "Job Count": job_count_chart,
         "CPU-Hours": cpu_time_chart,
         "GPU-Hours": gpu_time_chart,
     })
-    return chart_tabs, get_color_map, gpu_df, gpu_pie_chart, gpu_time_series
+
+    node_util_tabs = mo.ui.tabs({
+        "Per-Node Utilization (GPU)": gpu_node_bar,
+        "Per-Node Utilization (CPU)": cpu_node_bar,
+    })
+
+    return chart_tabs, node_util_tabs
 
 
 @app.cell
@@ -395,6 +625,7 @@ def _(
     kpi_cards,
     mig_checkbox,
     mo,
+    node_util_tabs,
     top_metric_ctrl,
     top_n_ctrl,
     top_users_chart,
@@ -408,6 +639,7 @@ def _(
         mo.md("### Utilization"),
         granularity_ctrl,
         chart_tabs,
+        node_util_tabs,
         mo.md("---"),
         mo.md("### Top Users"),
         mo.hstack([top_n_ctrl, top_metric_ctrl], wrap=True),
