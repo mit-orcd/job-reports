@@ -1,6 +1,11 @@
 #!/bin/bash
 
+
+#SBATCH --job-name=marimo_data
 #SBATCH --mem=16G
+#SBATCH --time=02:00:00          
+#SBATCH --partition=mit_normal
+
 
 # Usage:
 # ./parse_scheduler.sh <input_dir> <output_dir> [log_file] [error_file]
@@ -28,12 +33,15 @@ mkdir -p "$OUTPUT_DIR"
 if [ ! -f "$LOG_FILE" ]; then
   touch "$LOG_FILE"
 fi
+
+
 if [ ! -f "$ERROR_FILE" ]; then
   touch "$ERROR_FILE"
 fi
 
 echo "Using log file: $LOG_FILE"
 echo "Updating error file: $ERROR_FILE"
+
 
 # Loop through files in input directory
 for FILE in "$INPUT_DIR"/*.out; do
@@ -49,7 +57,7 @@ for FILE in "$INPUT_DIR"/*.out; do
     echo "Processing: $FILENAME"
 
     # Run parser (adjust args if needed)
-    # python data_parser.py --input "$FILE" --output "$OUTPUT_DIR"
+
     python data_parser.py --input "$FILE" --output "$OUTPUT_DIR" >> "$ERROR_FILE" 2>&1
 
     # Check if parsing succeeded

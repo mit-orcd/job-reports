@@ -60,14 +60,6 @@ def parse_file(data_file):
         "timelimit","nodelist","jobname"
     ]
 
-    # 59443519|59443519|eofe7|sched_any_quicktest|normal|mit_general|jaysonj|259823|
-    # jaysonj|259823|2024-10-22T16:59:27|2024-10-22T16:59:27|None|2025-02-18T13:23:51|00:00:00|0:0|
-    # CANCELLED by 0|1|0|1|1000M|billing=1,cpu=1,mem=1000M,node=1||10:00:00|None assigned|2DCV
-
-    # 5841751_44|5841796|eofe7|mit_normal|normal|mit_general|newolfe|224670|
-    # newolfe|224670|2025-11-19T15:40:50|2025-11-19T15:42:51|None|2026-04-07T09:22:19|00:00:00|0:0|
-    # CANCELLED by 82831|1|0|1|4G|billing=1,cpu=1,mem=4G,node=1||12:00:00|None assigned||pe
-
     df = pd.read_csv(data_file, sep="|", header=None, names=columns) # Load .out file
 
     ### Update column values ###
@@ -97,7 +89,6 @@ def parse_file(data_file):
 def parse_and_save(data_file, output_dir):
     # Parse the data file
     df = parse_file(data_file)
-    
 
     # Seperate df into different year and month
     df["year_month"] = df["submit"].dt.strftime("%Y%m")
@@ -131,5 +122,3 @@ if __name__ == "__main__":
     parse_and_save(args.input, args.output)
 
     # Example usage: python generate_parsed.py --input=/orcd/data/orcd/022/util_viz/data/202301-sacct.out --output=/orcd/data/orcd/022/util_viz/data/temp
-
-
