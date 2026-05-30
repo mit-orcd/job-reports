@@ -122,5 +122,3 @@ if __name__ == "__main__":
     parse_and_save(args.input, args.output)
 
     # Example usage: python generate_parsed.py --input=/orcd/data/orcd/022/util_viz/data/202301-sacct.out --output=/orcd/data/orcd/022/util_viz/data/temp
-
-    
